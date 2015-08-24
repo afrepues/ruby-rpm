@@ -2,13 +2,13 @@
 
 Name:           ruby
 Version:        %{rubyver}
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Ruby License/GPL - see COPYING
 URL:            http://www.ruby-lang.org/
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       readline ncurses gdbm glibc openssl libyaml libffi zlib
 BuildRequires:  readline-devel ncurses-devel gdbm-devel glibc-devel gcc openssl-devel make libyaml-devel libffi-devel zlib-devel
-Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}.tar.gz
+Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}.tar.xz
 Summary:        An interpreter of object-oriented scripting language
 Group:          Development/Languages
 Provides: ruby(abi) = 2.2
@@ -64,6 +64,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*
 
 %changelog
+* Tue Aug 19 2015 Servilio Afre Puentes <afrepues@sharcnet.ca> - 2.2.3-2
+- Switch to xz-compressed sources for its smaller download size
+
 * Tue Aug 19 2015 Masato Tanaka <tanaka@feedforce.jp> - 2.2.3
 - Update ruby version to 2.2.3
 

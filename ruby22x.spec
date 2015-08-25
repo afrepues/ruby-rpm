@@ -6,9 +6,10 @@ Release:        2%{?dist}
 License:        Ruby License/GPL - see COPYING
 URL:            http://www.ruby-lang.org/
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires:       readline ncurses gdbm glibc openssl libyaml libffi zlib
+Requires:       readline ncurses gdbm glibc openssl libyaml libffi zlib /sbin/ldconfig
 BuildRequires:  readline-devel ncurses-devel gdbm-devel glibc-devel gcc openssl-devel make libyaml-devel libffi-devel zlib-devel
 Source0:        ftp://ftp.ruby-lang.org/pub/ruby/ruby-%{rubyver}.tar.xz
+Patch0:		00-use-prefix-where-usr-is.patch
 Summary:        An interpreter of object-oriented scripting language
 Group:          Development/Languages
 Provides: ruby(abi) = 2.2
@@ -23,6 +24,7 @@ Obsoletes: ruby-irb
 Obsoletes: ruby-rdoc
 Obsoletes: ruby-devel
 Obsoletes: rubygems
+Prefix: /usr
 
 %description
 Ruby is the interpreted scripting language for quick and easy
@@ -32,12 +34,14 @@ straight-forward, and extensible.
 
 %prep
 %setup -n ruby-%{rubyver}
+%patch0
 
 %build
 export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
 
 %configure \
   --enable-shared \
+  --enable-load-relative \
   --disable-rpath \
   --without-X11 \
   --without-tk \
@@ -50,14 +54,26 @@ make %{?_smp_mflags}
 # installing binaries ...
 make install DESTDIR=$RPM_BUILD_ROOT
 
+# make ld aware of shared libraries
+mkdir -p ${RPM_BUILD_ROOT}/etc/ld.so.conf.d
+echo %{_libdir} > ${RPM_BUILD_ROOT}/etc/ld.so.conf.d/ruby22.conf
+
 #we don't want to keep the src directory
 rm -rf $RPM_BUILD_ROOT/usr/src
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post
+echo ${RPM_INSTALL_PREFIX}/%{_lib} > /etc/ld.so.conf.d/ruby22.conf
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
+
 %files
 %defattr(-, root, root)
+%config %{_sysconfdir}/ld.so.conf.d/ruby22.conf
 %{_bindir}/*
 %{_includedir}/*
 %{_datadir}/*
@@ -66,6 +82,9 @@ rm -rf $RPM_BUILD_ROOT
 %changelog
 * Tue Aug 19 2015 Servilio Afre Puentes <afrepues@sharcnet.ca> - 2.2.3-2
 - Switch to xz-compressed sources for its smaller download size
+- Make package relocatable
+- Change default location for Gems to be the relocated path, not
+  "/usr"
 
 * Tue Aug 19 2015 Masato Tanaka <tanaka@feedforce.jp> - 2.2.3
 - Update ruby version to 2.2.3

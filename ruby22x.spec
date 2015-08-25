@@ -37,7 +37,10 @@ straight-forward, and extensible.
 %patch0
 
 %build
-export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
+export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing -Wformat -Werror=format-security -Wl,-z,relro -Wl,-z,now -fPIC"
+export CXXFLAGS="$RPM_OPT_FLAGS -Wall -Wformat -Werror=format-security -Wl,-z,relro -Wl,-z,now -fPIC"
+export CPPFLAGS="$RPM_OPT_FLAGS -D_FORTIFY_SOURCE=2"
+export LDFLAGS="-Wl,-z,relro -Wl,-z,now -fstack-protector -rdynamic -Wl,-export-dynamic"
 
 %configure \
   --enable-shared \

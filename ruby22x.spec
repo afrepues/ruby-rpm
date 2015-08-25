@@ -43,6 +43,9 @@ export CFLAGS="$RPM_OPT_FLAGS -Wall -fno-strict-aliasing"
   --enable-shared \
   --enable-load-relative \
   --disable-rpath \
+  --disable-dependency-tracking \
+  --disable-silent-rules \
+  --disable-maintainer-mode \
   --without-X11 \
   --without-tk \
   --includedir=%{_includedir}/ruby \
